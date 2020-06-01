@@ -1,0 +1,37 @@
+"use strict";
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = exports.registerHookInterruptionHandler = void 0;
+
+var _fs = _interopRequireDefault(require("fs"));
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+const withHook = answers => {
+  try {
+    const scope = answers.scope ? `(${answers.scope}): ` : '';
+    const title = `${answers.gitmoji} ${scope}${answers.title}`;
+    const commitMessage = `${title}\n\n${answers.message}`;
+
+    _fs.default.writeFileSync(process.argv[3], commitMessage);
+  } catch (error) {
+    console.error(error);
+    process.exit(1);
+  } finally {
+    process.exit(0);
+  }
+};
+
+const registerHookInterruptionHandler = () => {
+  // Allow to interrupt the hook without cancelling the commit
+  process.on('SIGINT', () => {
+    console.warn('gitmoji-cli was interrupted');
+    process.exit(0);
+  });
+};
+
+exports.registerHookInterruptionHandler = registerHookInterruptionHandler;
+var _default = withHook;
+exports.default = _default;
