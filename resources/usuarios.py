@@ -37,18 +37,17 @@ def login():
 
     senha += config.SALT
     senha_md5 = hashlib.md5(senha.encode()).hexdigest()
-    
+
     usuario = Usuario.query \
     .filter(Usuario.email == email) \
     .filter(Usuario.senha == senha_md5) \
     .first()
-    
-    if usuario:
-        # Identity can be any data that is json serializable
+
+   if usuario:
         access_token = create_access_token(identity=email)
-        return jsonify(access_token=access_token), 200
+        return jsonify({"user": usuario.nome, "access_token": access_token}), 200
     else:
-        return jsonify({"msg": "E-mail ou senha inválido"}), 400
+        return jsonify({"user": None, "access_token": None}), 200
     
 
 @usuarios.route('/logout')
